@@ -2,18 +2,22 @@ import {  Button, Flex, FormLabel, Input, InputGroup, InputLeftElement, Menu, Me
 import { useEffect, useState } from "react";
 import { IoCheckmark, IoChevronDown, IoCloudUpload, IoLocation, IoTrash, IoWarning } from "react-icons/io5";
 import { categories } from "../data";
+import { useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 
 // prettier-ignore
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { firebaseApp } from "../firebase-config";
 import AlertMsg from "./AlertMsg";
+import { fetchUser } from "../utils/fetchUser";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+import TextEditor from "./TextEditor";
 
 const Create = () => {
     const { colorMode } = useColorMode();
     const textColor = useColorModeValue("gray.900", "gray.50");
 
-    const [title, setTitle] = useState("")
+    const [title, setTitle] = useState("");
     const [category, setCategory] = useState("Choose as category");
     const [location, setLocation] = useState("");
     const [videoAsset, setVideoAsset] = useState(null);
@@ -23,8 +27,13 @@ const Create = () => {
     const [alertStatus, setAlertStatus] = useState("");
     const [alertMsg, setAlertMsg] = useState("");
     const [alertIcon, setAlertIcon] = useState("");
+    const [description, setDescription] = useState("");
+
+    const [userInfo] = fetchUser();
+    const navigate = useNavigate();
 
     const storage = getStorage(firebaseApp);
+    const fireStoreDb = getFirestore();
     
     const uploadImage = (e) => {
         setLoading(true)
@@ -53,10 +62,6 @@ const Create = () => {
         })
     }
 
-    useEffect(() => {
-        console.log(videoAsset);
-    }, [videoAsset])
-
     const deleteImage = () => {
         const deleteRef = ref(storage, videoAsset)
         deleteObject(deleteRef)
@@ -73,6 +78,46 @@ const Create = () => {
             .catch((error) => {
                 console.log(error);
             })
+    }
+
+    const getDescriptionValue = (event, editor) => {
+        const data = editor.getData();
+        setDescription(data)
+
+    }
+
+    useEffect(() => {}, [title, location, description, category])
+
+    const uploadDetails = async () => {
+        try{
+            setLoading(true);
+            if (title.trim() && category && location.trim() && videoAsset) {
+                const data = {
+                    id: `${Date.now()}`,
+                    title: title,
+                    userId: userInfo?.uid,
+                    category: category,
+                    location: location,
+                    videoUrl: videoAsset,
+                    description: description
+                }
+                await setDoc(doc(fireStoreDb, "videos", `${Date.now()}`), data)
+                setLoading(false);
+                navigate("/", { replace: true });
+            } else {
+
+                setAlert(true);
+                setAlertStatus("error");
+                setAlertIcon(<IoWarning fontSize={25}/>);
+                setAlertMsg("Required Fields are Missing!")
+                setTimeout(() => {
+                    setAlert(false);
+                }, 4000)
+                setLoading(false)
+            }
+        } catch(error){
+            console.log(error);
+        }
     }
 
     return (
@@ -259,6 +304,17 @@ const Create = () => {
                         </Flex>
                     )}
                 </Flex>
+                <TextEditor getDescriptionValue={getDescriptionValue}/>
+                <Button
+                    isLoading={loading}
+                    loadingText="Uploading"
+                    colorScheme={"linkedin"}
+                    variant={`${loading ? "outline" : "solid"}`}
+                    width={"xl"}
+                    _hover={{shadow: "lg"}}
+                    fontSize={20}
+                    onClick={() => uploadDetails()}
+                >Upload</Button>
             </Flex>
         </Flex>
     )
