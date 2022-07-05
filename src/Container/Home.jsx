@@ -1,10 +1,9 @@
 import { Flex } from "@chakra-ui/react";
-import { Category, Create, Feed, NavBar, Search, VideoPin } from "../Components";
+import { Category, Create, Feed, NavBar, Search, UserProfile, VideoPinDetail } from "../Components";
 import { Routes, Route } from "react-router-dom";
 import { categories } from "../data";
 
 const Home = ({user}) => {
-    console.log(user);
     return (
         <>
             <NavBar user={user}/>
@@ -22,13 +21,16 @@ const Home = ({user}) => {
                 <Flex 
                     width={"95%"}
                     px={4}
+                    justifyContent="center"
+                    alignItems={"center"}
                 >
                     <Routes>
                         <Route path="/" element={<Feed/>}/>
                         <Route path="/category/:categoryId" element={<Feed/>}/>
                         <Route path="/create" element={<Create/>}/>
-                        <Route path="/videoDetail/:videoId" element={<VideoPin/>}/>
+                        <Route path="/videoDetail/:videoId" element={<VideoPinDetail/>}/>
                         <Route path="/search" element={<Search/>}/>
+                        <Route path="/userDetail/:userId" element={<UserProfile/>}/>
                     </Routes>
                 </Flex>
             </Flex>
