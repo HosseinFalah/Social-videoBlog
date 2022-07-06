@@ -9,10 +9,6 @@ const TextEditor = ({getDescriptionValue}) =>  {
             editor={ ClassicEditor }
             apiKey={process.env.REACT_APP_TINYMCE_API_KEY}
             data=""
-            onReady={ editor => {
-                // You can store the "editor" and use when it is needed.
-                console.log( 'Editor is ready to use!', editor );
-            }}
             onChange={getDescriptionValue}
         />
     );

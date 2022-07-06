@@ -24,4 +24,17 @@ const getUserInfo = async (firestoreDb, userId) => {
     }
 }
 
-export {getAllFeeds, getUserInfo}
+// fetch the user information user userId
+
+const getSpecificVideo = async (firestoreDb, videoId) => {
+    const videoRef = doc(firestoreDb, "videos", videoId);
+
+    const videoSpan = await getDoc(videoRef);
+    if (videoSpan.exists()) {
+        return videoSpan.data();
+    } else {
+        return "No Such Document";
+    }
+} 
+
+export {getAllFeeds, getUserInfo, getSpecificVideo}

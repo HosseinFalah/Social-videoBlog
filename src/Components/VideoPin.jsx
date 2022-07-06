@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Flex, Image, Text, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Flex, Image, Text, useColorModeValue } from "@chakra-ui/react";
 import { getFirestore } from "firebase/firestore";
 import { getUserInfo } from "../utils/fetchData";
 import { firebaseApp } from "../firebase-config";
