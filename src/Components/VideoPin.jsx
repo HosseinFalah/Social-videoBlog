@@ -71,6 +71,8 @@ const VideoPin = ({ data }) => {
                             border="2px"
                             borderColor={bg}
                             mt={-10}
+                            minHeight="50px"
+                            minWidth={"50px"}
                         />
                     </Link>
                 </Flex>

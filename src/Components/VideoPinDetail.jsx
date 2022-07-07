@@ -1,15 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import ReactPlayer from "react-player";
 import screenfull from "screenfull";
-import { Box, Flex, Grid, GridItem, Image, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, ButtonGroup, Flex, Grid, GridItem, Image, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverFooter, PopoverHeader, PopoverTrigger, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, useColorModeValue } from "@chakra-ui/react";
 import { getFirestore } from "firebase/firestore";
-import { IoHome, IoPause, IoPlay } from "react-icons/io5";
+import { IoHome, IoPause, IoPlay, IoTrash } from "react-icons/io5";
 import { MdForward10, MdFullscreen, MdOutlineReplay10, MdVolumeOff, MdVolumeUp } from "react-icons/md";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { firebaseApp } from "../firebase-config";
-import { getSpecificVideo } from "../utils/fetchData";
+import { deleteVideo, getSpecificVideo, getUserInfo } from "../utils/fetchData";
 import logo from "../Asset/img/logo.png";
 import Spinner from "./Spinner";
+import HTMLReactParser from "html-react-parser";
+import { FcApproval } from "react-icons/fc";
+import moment from "moment";
+import { fetchUser } from "../utils/fetchUser";
 
 const format = (seconds) => {
     if (isNaN(seconds)) {
@@ -29,11 +33,17 @@ const format = (seconds) => {
     return `${mm}:${ss}`;
 }
 
+const Avatar = "https://ak.picdn.net/contributors/3038285/avatars/thumb.jpg?t=164360626";
+
 const VideoPinDetail = () => {
     const { videoId } = useParams();
+    const bg = useColorModeValue("blackAlpha.700", "gray.900");
     const textColor = useColorModeValue("gray.900", "gray.50");
+    const navigate = useNavigate()
+
     //firestore database insrance
     const firestoreDb = getFirestore(firebaseApp);
+    const [localUser] = fetchUser()
 
     const [isLoading, setIsLoading] = useState(false);
     const [videoInfo, setVideoInfo] = useState(null);
@@ -42,6 +52,7 @@ const VideoPinDetail = () => {
     const [volume, setvolume] = useState(0.5);
     const [played, setPlayed] = useState(0);
     const [seeking, setSeeking] = useState(false);
+    const [userInfo, setUserInfo] = useState(null);
 
     // Custom Refernce
     const playerRef = useRef();
@@ -52,6 +63,9 @@ const VideoPinDetail = () => {
             setIsLoading(true);
             getSpecificVideo(firestoreDb, videoId).then((data) => {
                 setVideoInfo(data);
+                getUserInfo(firestoreDb, data.userId).then((user) => {
+                    setUserInfo(user);
+                })
                 setIsLoading(false);
             })
         }
@@ -102,6 +116,12 @@ const VideoPinDetail = () => {
     const elapsedTime = format(currentTime);
     const totalDuration = format(duration);
 
+    const deleteTheVideo = (videoId) => {
+        setIsLoading(true);
+        deleteVideo(firestoreDb, videoId);
+        navigate("/", {replace: true})
+    }
+
     if (isLoading) return <Spinner />
 
     return (
@@ -129,8 +149,8 @@ const VideoPinDetail = () => {
             </Flex>
 
             {/* Main Grid for video */}
-            <Grid templateColumns="repeat(3, 1fr)" gap={2} width="100%">
-                <GridItem width={"100%"} colSpan={"2"}>
+            <Grid templateColumns="repeat(4, 1fr)" gap={2} width="100%">
+                <GridItem width={"100%"} colSpan={"3"}>
                     <Flex width={"full"} bg="black" position="relative" ref={playerContainer}>
                         <ReactPlayer
                             ref={playerRef}
@@ -276,8 +296,88 @@ const VideoPinDetail = () => {
                             </Flex>
                         </Flex>
                     </Flex>
+
+                    {/* Video Description */}
+
+                    {videoInfo?.description && (
+                        <Flex my={6} direction="column">
+                            <Text my={2} fontSize={25} fontWeight="semibold">
+                                Description
+                            </Text>
+                            {HTMLReactParser(videoInfo?.description)}
+                        </Flex>
+                    )}
                 </GridItem>
-                <GridItem width={"100%"} colSpan={"1"}></GridItem>
+                <GridItem width={"100%"} colSpan={"1"}>
+                    {
+                        userInfo && (
+                            <Flex direction={"column"} width={"full"}>
+                                <Flex alignItems={"center"} width="full">
+                                    <Image 
+                                        src={userInfo?.photoURL ? userInfo?.photoURL : Avatar}
+                                        rounded="full"
+                                        width={"60px"}
+                                        height={"60px"}
+                                        minHeight="60px"
+                                        minWidth={"60px"}
+                                    />
+                                    <Flex direction={"column"} ml={3}>
+                                        <Flex alignItems={"center"}>
+                                            <Text color={textColor} fontWeight="semibold">
+                                                {userInfo?.displayName}
+                                            </Text>
+                                            <FcApproval/>
+                                        </Flex>
+                                        {videoInfo?.id && (
+                                            <Text fontSize={12}>
+                                                {moment(new Date(+(videoInfo.id)).toISOString()).fromNow()}
+                                            </Text>
+                                        )}
+                                    </Flex>
+                                </Flex>
+                                {/* Ction Buttons */}
+                                <Flex justifyContent={"space-around"} mt={6}>
+                                    { userInfo?.uid === localUser.uid && (
+                                        <Popover closeOnEsc>
+                                            <PopoverTrigger>
+                                                <Button colorScheme="red">
+                                                    <IoTrash fontSize={20} color="#fff"/>    
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent>
+                                                <PopoverHeader fontWeight='semibold'>Confirmation</PopoverHeader>
+                                                <PopoverArrow />
+                                                <PopoverCloseButton />
+                                                <PopoverBody>
+                                                    Are you sure you want to continue with your action?
+                                                </PopoverBody>
+                                                <PopoverFooter display="flex" justifyContent="flex-end">
+                                                    <ButtonGroup size="sm">
+                                                        <Button colorScheme="red" onClick={() => deleteTheVideo(videoId)}>Yes</Button>
+                                                    </ButtonGroup>
+                                                </PopoverFooter>
+                                            </PopoverContent>
+                                        </Popover>
+                                    )}
+                                    <a 
+                                        href={videoInfo.videoUrl}
+                                        download
+                                        onClick={(e) => e.stopPropagation()}    
+                                    >
+                                        <Button
+                                            colorScheme={"whatsapp"}
+                                            rounded="full"
+                                            my={2}
+                                            mt={"0"}
+                                        >
+                                            Free Download
+                                        </Button>
+                                    </a>
+                                </Flex>
+                            </Flex>
+                        )
+                    }
+                </GridItem>
             </Grid>
         </Flex>
     )
