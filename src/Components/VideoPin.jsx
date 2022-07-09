@@ -36,7 +36,7 @@ const VideoPin = ({ data }) => {
             rounded="md"
             overflow={"hidden"}
             position="relative"
-            maxWidth={"300px"}
+            maxWidth={"500px"}
             bg="gray.200"
         >
             <Link to={`/videoDetail/${data.id}`}>

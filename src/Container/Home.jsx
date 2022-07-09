@@ -7,7 +7,7 @@ const Home = ({user}) => {
     return (
         <>
             <NavBar user={user}/>
-            <Flex width={"100vw"}>
+            <Flex width={"100vw"} px="5">
                 <Flex 
                     direction={"column"}
                     justifyContent="start"

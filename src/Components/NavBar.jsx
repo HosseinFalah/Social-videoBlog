@@ -1,7 +1,7 @@
 import logo from "../Asset/img/logo.png";
 import logo_dark from "../Asset/img/logo_dark.png";
 import { Link, useNavigate } from "react-router-dom";
-import { Flex, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Avatar, Flex, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, useColorMode, useColorModeValue } from "@chakra-ui/react";
 import { IoAdd, IoLogOut, IoMoon, IoSearch, IoSunny } from "react-icons/io5";
 
 const NavBar = ({ user }) => {
@@ -13,10 +13,11 @@ const NavBar = ({ user }) => {
             justifyContent={"space-between"}
             alignItems="center"
             width={"100vw"}
-            p={4}
+            py={2}
+            px={10}
         >
             <Link to={""}>
-                <Image src={colorMode === "light" ? logo_dark : logo} width={"180px"}/>
+                <Image width={"10rem"} objectFit={"contain"} src={colorMode === "light" ? logo_dark : logo} />
             </Link>
 
             <InputGroup mx={6} width="60vw">
@@ -70,12 +71,7 @@ const NavBar = ({ user }) => {
                 </Link>
                 <Menu>
                     <MenuButton>
-                        <Image 
-                            src={user?.photoURL} 
-                            width="40px" 
-                            height="40px"
-                            rounded="full"
-                        />
+                        <Avatar size='md' name='Dan Abrahmov' src={user?.photoURL} />
                     </MenuButton>
                     <MenuList shadow={"lg"}>
                         <Link to={`/userDetail/${user?.uid}`}>
