@@ -2,7 +2,7 @@ import { Flex, Progress, Text } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { Circles } from "react-loader-spinner";
 
-const Spinner = ({ msg, progress }) => {
+const Spinner = ({ msg, Percentage, progress }) => {
     useEffect(() => {}, [progress])
     return (
         <Flex
@@ -15,6 +15,9 @@ const Spinner = ({ msg, progress }) => {
             <Circles color="#00BFFF" height={80} width={80}/>
             <Text fontSize={25} textAlign="center" px={2}>
                 {msg}
+            </Text>
+            <Text fontSize={25} textAlign="center" px={2}>
+                {Percentage?.toFixed(1)}%
             </Text>
             {progress && (
                 <Progress

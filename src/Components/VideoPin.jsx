@@ -10,8 +10,8 @@ const Avatar = "https://ak.picdn.net/contributors/3038285/avatars/thumb.jpg?t=16
 const VideoPin = ({ data }) => {
     const firestoreDb = getFirestore(firebaseApp)
 
-    const bg = useColorModeValue("gray.700", "gray.900");
-    const textColor = useColorModeValue("gray.100", "gray.100");
+    const bg = useColorModeValue("gray.100", "gray.900");
+    const textColor = useColorModeValue("gray.800", "gray.100");
 
     const [userId, setUserId] = useState(null);
     const [userInfo, setUserInfo] = useState(null);
@@ -51,7 +51,7 @@ const VideoPin = ({ data }) => {
                 position={"absolute"}
                 bottom="0"
                 left="0"
-                p={2}
+                p={1}
                 bg={bg}
                 width="full"
                 direction={"column"}
@@ -62,7 +62,7 @@ const VideoPin = ({ data }) => {
                     alignItems={"center"}
                     >
                     <Text color={textColor} fontSize={20}>{data.title}</Text>
-                    <Link to={`/userDetail/${data.userId}`}>
+                    <Link to={`/userDetail/${userId}`}>
                         <Image 
                             src={userInfo?.photoURL ? userInfo?.photoURL : Avatar}
                             rounded="full"

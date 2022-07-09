@@ -1,11 +1,54 @@
 // prettier-ignore
-import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
 
 // fetch all docs from firbase
 
 const getAllFeeds = async (firestoreDb) => {
     const feeds = await getDocs(
         query(collection(firestoreDb, "videos"), orderBy("id", "desc"))
+    );
+
+    return feeds.docs.map((doc) => doc.data());
+}
+
+// CategoryWIse Feeds
+
+const categoryFeeds = async (firestoreDb, categoryId) => {
+    const feeds = await getDocs(
+        query(
+            collection(firestoreDb, "videos"),
+            where("category", "==", categoryId),
+            orderBy("id", "desc")
+        )
+    );
+
+    return feeds.docs.map((doc) => doc.data());
+}
+
+//Get Recommended feeds
+
+const recommendedFeed = async (firestoreDb, categoryId, videoId) => {
+    const feeds = await getDocs(
+        query(
+            collection(firestoreDb, "videos"), 
+            where("category", "==", categoryId),
+            where("id", "!=", videoId),
+            orderBy("id", "desc")
+        )
+    );
+
+    return feeds.docs.map((doc) => doc.data());
+}
+
+// user uploaded videos
+
+const userUploadedVideos = async (firestoreDb, userId) => {
+    const feeds = await getDocs(
+        query(
+            collection(firestoreDb, "videos"),
+            where("userId", "==", userId),
+            orderBy("id", "desc")
+        )
     );
 
     return feeds.docs.map((doc) => doc.data());
@@ -41,4 +84,4 @@ const deleteVideo = async (firestoreDb, videoId) => {
     await deleteDoc(doc(firestoreDb, "videos", videoId))
 }
 
-export {getAllFeeds, getUserInfo, getSpecificVideo, deleteVideo}
+export {getAllFeeds, categoryFeeds, recommendedFeed, userUploadedVideos, getUserInfo, getSpecificVideo, deleteVideo}

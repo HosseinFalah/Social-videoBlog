@@ -43,7 +43,6 @@ const Create = () => {
 
         uploadTask.on("state_changed", (snapshot) => {
             const uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log(uploadProgress);
             setProgress(uploadProgress)
         }, (error) => {
             console.log(error);
@@ -247,7 +246,7 @@ const Create = () => {
                                     cursor="pointer"
                                 >
                                     {loading ? (
-                                        <Spinner msg={"Uploading Your Video"} progress={progress}/>
+                                        <Spinner msg={"Uploading Your Video"} Percentage={progress} progress={progress}/>
                                     ) : (
                                         <>
                                             <IoCloudUpload

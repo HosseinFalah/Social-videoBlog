@@ -1,28 +1,38 @@
+import { useEffect, useState } from "react";
 import { SimpleGrid } from "@chakra-ui/react";
 import { getFirestore } from "firebase/firestore";
-import { useEffect, useState } from "react";
 import { firebaseApp } from "../firebase-config";
-import { getAllFeeds } from "../utils/fetchData";
+import { categoryFeeds, getAllFeeds } from "../utils/fetchData";
+import { useParams } from "react-router-dom";
 import Spinner from "./Spinner";
 import VideoPin from "./VideoPin";
+import NotFound from "./NotFound";
 
 const Feed = () => {
     // firestore database instance
     const firestoreDb = getFirestore(firebaseApp);
 
     const [feeds, setFeeds] = useState(null);
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const { categoryId } = useParams();
 
     useEffect(() => {
         setLoading(true);
-        getAllFeeds(firestoreDb).then(data => {
-            setFeeds(data);
-            setLoading(false);
-        })
-    }, [])
+        if (categoryId) {
+            categoryFeeds(firestoreDb, categoryId).then((data) => {
+                setFeeds(data);
+                setLoading(false);
+            })
+        } else {
+            getAllFeeds(firestoreDb).then(data => {
+                setFeeds(data);
+                setLoading(false);
+            })
+        }
+    }, [categoryId])
     
     if (loading) return <Spinner msg={"Loading Your Feeds"}/>
-    
+    if (!feeds?.length > 0) return <NotFound />;
     return (
         <SimpleGrid 
             minChildWidth="300px" 

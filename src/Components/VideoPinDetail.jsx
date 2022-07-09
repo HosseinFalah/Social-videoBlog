@@ -7,13 +7,14 @@ import { IoHome, IoPause, IoPlay, IoTrash } from "react-icons/io5";
 import { MdForward10, MdFullscreen, MdOutlineReplay10, MdVolumeOff, MdVolumeUp } from "react-icons/md";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { firebaseApp } from "../firebase-config";
-import { deleteVideo, getSpecificVideo, getUserInfo } from "../utils/fetchData";
+import { deleteVideo, getSpecificVideo, getUserInfo, recommendedFeed } from "../utils/fetchData";
 import logo from "../Asset/img/logo.png";
 import Spinner from "./Spinner";
 import HTMLReactParser from "html-react-parser";
 import { FcApproval } from "react-icons/fc";
 import moment from "moment";
 import { fetchUser } from "../utils/fetchUser";
+import RecommendedVideos from "./RecommendedVideos";
 
 const format = (seconds) => {
     if (isNaN(seconds)) {
@@ -37,7 +38,6 @@ const Avatar = "https://ak.picdn.net/contributors/3038285/avatars/thumb.jpg?t=16
 
 const VideoPinDetail = () => {
     const { videoId } = useParams();
-    const bg = useColorModeValue("blackAlpha.700", "gray.900");
     const textColor = useColorModeValue("gray.900", "gray.50");
     const navigate = useNavigate()
 
@@ -53,6 +53,7 @@ const VideoPinDetail = () => {
     const [played, setPlayed] = useState(0);
     const [seeking, setSeeking] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
+    const [feeds, setFeeds] = useState(null);
 
     // Custom Refernce
     const playerRef = useRef();
@@ -63,6 +64,11 @@ const VideoPinDetail = () => {
             setIsLoading(true);
             getSpecificVideo(firestoreDb, videoId).then((data) => {
                 setVideoInfo(data);
+
+                recommendedFeed(firestoreDb, data.category, videoId).then((feed) => {
+                    setFeeds(feed)
+                })
+
                 getUserInfo(firestoreDb, data.userId).then((user) => {
                     setUserInfo(user);
                 })
@@ -379,6 +385,14 @@ const VideoPinDetail = () => {
                     }
                 </GridItem>
             </Grid>
+            {feeds && (
+                <Flex direction={"column"} width="full" my={6}>
+                    <Text my={4} fontSize={25} fontWeight="semibold">
+                        Recommended Videos
+                    </Text>
+                    <RecommendedVideos feeds={feeds}/>
+                </Flex>
+            )}
         </Flex>
     )
 }

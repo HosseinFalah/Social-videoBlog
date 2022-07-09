@@ -58,6 +58,7 @@ const Login = () => {
                         colorScheme="whiteAlpha" 
                         shadow={"lg"}
                         onClick={() => login()}
+                        color="#f1f1f1"
                     >
                         Signin with Google
                     </Button>

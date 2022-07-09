@@ -1,13 +1,13 @@
 import logo from "../Asset/img/logo.png";
 import logo_dark from "../Asset/img/logo_dark.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Flex, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, useColorMode, useColorModeValue } from "@chakra-ui/react";
 import { IoAdd, IoLogOut, IoMoon, IoSearch, IoSunny } from "react-icons/io5";
 
 const NavBar = ({ user }) => {
     const { colorMode, toggleColorMode } = useColorMode();
     const bg = useColorModeValue("gray.600", "gray.300");
-
+    const navigate = useNavigate()
     return (
         <Flex 
             justifyContent={"space-between"}
@@ -15,7 +15,7 @@ const NavBar = ({ user }) => {
             width={"100vw"}
             p={4}
         >
-            <Link to={"/"}>
+            <Link to={""}>
                 <Image src={colorMode === "light" ? logo_dark : logo} width={"180px"}/>
             </Link>
 
@@ -78,13 +78,17 @@ const NavBar = ({ user }) => {
                         />
                     </MenuButton>
                     <MenuList shadow={"lg"}>
-                        <Link to={""}>
+                        <Link to={`/userDetail/${user?.uid}`}>
                             <MenuItem>My Account</MenuItem>
                         </Link>
                         <MenuItem
                             flexDirection={"row"}
                             alignItems="center"
                             gap={4}
+                            onClick={() => {
+                                localStorage.clear()
+                                navigate("/login", {replace: true})
+                            }}
                         >
                             LogOut <IoLogOut fontSize={20}/>
                         </MenuItem>
