@@ -1,13 +1,15 @@
 import logo from "../Asset/img/logo.png";
 import logo_dark from "../Asset/img/logo_dark.png";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Flex, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, useColorMode, useColorModeValue } from "@chakra-ui/react";
-import { IoAdd, IoLogOut, IoMoon, IoSearch, IoSunny } from "react-icons/io5";
+import { Avatar, Flex, Image, Menu, MenuButton, MenuItem, MenuList, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { IoAdd, IoLogOut, IoMoon, IoSunny } from "react-icons/io5";
+import Search from "./Search";
 
-const NavBar = ({ user }) => {
+const NavBar = ({ user}) => {
     const { colorMode, toggleColorMode } = useColorMode();
     const bg = useColorModeValue("gray.600", "gray.300");
     const navigate = useNavigate()
+
     return (
         <Flex 
             justifyContent={"space-between"}
@@ -19,20 +21,7 @@ const NavBar = ({ user }) => {
             <Link to={""}>
                 <Image width={"10rem"} objectFit={"contain"} src={colorMode === "light" ? logo_dark : logo} />
             </Link>
-
-            <InputGroup mx={6} width="60vw">
-                <InputLeftElement
-                    pointerEvents="none"
-                    children={<IoSearch fontSize={25}/>}
-                />
-                <Input 
-                    type="text"
-                    placeholder="Search..."
-                    fontSize={18}
-                    fontWeight="medium"
-                    variant={"filled"}
-                />
-            </InputGroup>
+            <Search/>
             <Flex justifyContent={"center"} alignItems="center">
                 <Flex
                     width={"40px"}

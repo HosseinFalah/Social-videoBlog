@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import { categories } from "../data";
 
 const Home = ({user}) => {
-    return (
+        return (
         <>
             <NavBar user={user}/>
             <Flex width={"100vw"} px="5">

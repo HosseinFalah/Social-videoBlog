@@ -15,21 +15,24 @@ const Feed = () => {
     const [feeds, setFeeds] = useState(null);
     const [loading, setLoading] = useState(false);
     const { categoryId } = useParams();
-
+  
     useEffect(() => {
-        setLoading(true);
-        if (categoryId) {
-            categoryFeeds(firestoreDb, categoryId).then((data) => {
-                setFeeds(data);
-                setLoading(false);
-            })
-        } else {
-            getAllFeeds(firestoreDb).then(data => {
-                setFeeds(data);
-                setLoading(false);
-            })
+        const fetchMovie = () => {
+            setLoading(true);
+            if (categoryId) {
+                categoryFeeds(firestoreDb, categoryId).then((data) => {
+                    setFeeds(data);
+                    setLoading(false);
+                });
+            } else {
+                getAllFeeds(firestoreDb).then((data) => {
+                    setFeeds(data);
+                    setLoading(false)
+                  });
+            }
         }
-    }, [categoryId])
+        fetchMovie()
+    }, [categoryId]);
     
     if (loading) return <Spinner msg={"Loading Your Feeds"}/>
     if (!feeds?.length > 0) return <NotFound />;
